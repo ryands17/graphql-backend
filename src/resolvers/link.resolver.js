@@ -10,15 +10,10 @@ let idCount = links.length
 
 module.exports = {
   Query: {
-    info: () => `This is the API of a Hackernews Clone`,
     feed: () => links,
     link: (_, { id }) => {
-      try {
-        let link = links.find(l => l.id === id)
-        return link || null
-      } catch (e) {
-        return null
-      }
+      let link = links.find(l => l.id === id)
+      return link || null
     },
   },
   Mutation: {
