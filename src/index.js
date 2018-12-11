@@ -14,4 +14,7 @@ const server = new GraphQLServer({
   resolvers,
 })
 
+server.use(require('helmet')())
+server.use(require('cors')())
+
 server.start(() => console.log(`Server is running on http://localhost:4000`))
