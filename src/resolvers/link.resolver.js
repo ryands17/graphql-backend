@@ -14,12 +14,9 @@ module.exports = {
   },
   Mutation: {
     post: async (_, args, ctx) => {
-      let id = await ctx
-        .db('links')
-        .insert(args)
-        .first()
+      let id = await ctx.db('links').insert(args)
       return {
-        id,
+        id: id[0],
         ...args,
       }
     },
