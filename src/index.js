@@ -5,6 +5,7 @@ const {
   mergeTypes,
   mergeResolvers,
 } = require('merge-graphql-schemas')
+const db = require('./db')
 
 const typeDefs = mergeTypes(fileLoader(path.join(__dirname, 'typedefs')))
 const resolvers = mergeResolvers(fileLoader(path.join(__dirname, 'resolvers')))
@@ -12,6 +13,9 @@ const resolvers = mergeResolvers(fileLoader(path.join(__dirname, 'resolvers')))
 const server = new GraphQLServer({
   typeDefs,
   resolvers,
+  context: {
+    db,
+  },
 })
 
 server.use(require('helmet')())

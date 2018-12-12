@@ -1,46 +1,50 @@
-let links = [
-  {
-    id: 'link-0',
-    url: 'www.howtographql.com',
-    description: 'Fullstack tutorial for GraphQL',
-  },
-]
-
-let idCount = links.length
-
 module.exports = {
   Query: {
-    feed: () => links,
-    link: (_, { id }) => {
-      let link = links.find(l => l.id === id)
+    feed: async (_, __, ctx) => {
+      const rows = await ctx.db.select().from('links')
+      return rows
+    },
+    link: async (_, { id }, ctx) => {
+      let link = await ctx
+        .db('links')
+        .where({ id })
+        .first()
       return link || null
     },
   },
   Mutation: {
-    post: (_, { url, description }) => {
-      let link = {
-        id: `link-${idCount++}`,
-        description,
-        url,
+    post: async (_, args, ctx) => {
+      let id = await ctx
+        .db('links')
+        .insert(args)
+        .first()
+      return {
+        id,
+        ...args,
       }
-      links.push(link)
-      return link
     },
-    updateLink: (_, { id, ...rest }) => {
-      let index = links.findIndex(l => l.id === id)
-      if (index === -1) return null
-      console.log('l', links[index])
-      let newLink = {
-        ...links[index],
-        ...rest,
-      }
-      links[index] = newLink
-      return newLink
+    updateLink: async (_, { id, ...rest }, ctx) => {
+      let i = await ctx
+        .db('links')
+        .where({ id })
+        .update(rest)
+      if (i <= 0) return null
+      let updatedLink = await ctx
+        .db('links')
+        .where({ id })
+        .first()
+      return updatedLink
     },
-    deleteLink: (_, { id }) => {
-      let index = links.findIndex(l => l.id === id)
-      if (index === -1) return null
-      return links.splice(index, 1)[0]
+    deleteLink: async (_, { id }, ctx) => {
+      let deletedLink = await ctx
+        .db('links')
+        .where({ id })
+        .first()
+      let i = await ctx
+        .db('links')
+        .where({ id })
+        .del()
+      return i > 0 ? deletedLink : null
     },
   },
   /* not required as gql resolves this automatically */
