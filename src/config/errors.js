@@ -7,3 +7,7 @@ exports.ServerError = createError('Server Error', {
 exports.UserExistsError = createError('User Exists Error', {
   message: 'A user with this email address already exists',
 })
+
+exports.IncorrectUserError = createError('Incorrect User Error', {
+  message: 'Invalid username or password',
+})

@@ -3,6 +3,12 @@ type User {
   email: String!
 }
 
+type LoginSuccess {
+  token: String!
+}
+
 type Mutation {
   signup(name: String!, email: String!, password: String!): Boolean!
+
+  login(email: String!, password: String!): LoginSuccess!
 }

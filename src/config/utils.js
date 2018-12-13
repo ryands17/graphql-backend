@@ -1,7 +1,9 @@
 const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 const { ServerError } = require('./errors')
 
 const saltRounds = parseInt(process.env.SALT_ROUNDS, 10)
+const jwt_secret = process.env.JWT_SECRET
 
 exports.prettyPrint = object => {
   console.log(JSON.stringify(object, null, 2))
@@ -24,4 +26,13 @@ exports.compareHash = async (password, hash) => {
   } catch (e) {
     return false
   }
+}
+
+exports.createJWTToken = fields => {
+  return new Promise((resolve, reject) => {
+    jwt.sign(fields, jwt_secret, { expiresIn: '1h' }, (err, token) => {
+      if (err) throw new ServerError()
+      resolve(token)
+    })
+  })
 }

@@ -1,7 +1,9 @@
-const { hashPassword } = require('../config/utils')
-const { UserExistsError, ServerError } = require('../config/errors')
-
-// TODO: add login mutation
+const { hashPassword, compareHash, createJWTToken } = require('../config/utils')
+const {
+  ServerError,
+  UserExistsError,
+  IncorrectUserError,
+} = require('../config/errors')
 
 module.exports = {
   Mutation: {
@@ -23,6 +25,21 @@ module.exports = {
         throw new ServerError()
       }
       return true
+    },
+    login: async (_, { email, password }, ctx) => {
+      let user = await ctx
+        .db('users')
+        .where({ email })
+        .first()
+      if (!user) {
+        throw new IncorrectUserError()
+      }
+      let passwordMatches = await compareHash(password, user.password)
+      if (!passwordMatches) {
+        throw new IncorrectUserError()
+      }
+      let token = await createJWTToken({ email: user.email, id: user.id })
+      return { token }
     },
   },
 }
