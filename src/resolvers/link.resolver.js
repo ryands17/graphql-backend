@@ -1,3 +1,5 @@
+const { verifyToken } = require('../config/utils')
+
 module.exports = {
   Query: {
     feed: async (_, __, ctx) => {
@@ -14,40 +16,42 @@ module.exports = {
   },
   Mutation: {
     post: async (_, args, ctx) => {
-      let id = await ctx.db('links').insert(args)
-      return {
-        id: id[0],
+      let userId = await verifyToken(ctx.token)
+      let link = {
         ...args,
+        user_id: userId,
       }
+      let id = await ctx.db('links').insert(link)
+      link.id = id[0]
+      return link
     },
     updateLink: async (_, { id, ...rest }, ctx) => {
+      let userId = await verifyToken(ctx.token)
       let i = await ctx
         .db('links')
-        .where({ id })
+        .where({ id, user_id: userId })
         .update(rest)
       if (i <= 0) return null
       let updatedLink = await ctx
         .db('links')
-        .where({ id })
+        .where({ id, user_id: userId })
         .first()
       return updatedLink
     },
     deleteLink: async (_, { id }, ctx) => {
+      let userId = await verifyToken(ctx.token)
       let deletedLink = await ctx
         .db('links')
-        .where({ id })
+        .where({ id, user_id: userId })
         .first()
       let i = await ctx
         .db('links')
-        .where({ id })
+        .where({ id, user_id: userId })
         .del()
       return i > 0 ? deletedLink : null
     },
   },
-  /* not required as gql resolves this automatically */
-  // Link: {
-  //   id: root => root.id,
-  //   description: root => root.description,
-  //   url: root => root.url,
-  // },
+  Link: {
+    userId: root => root.user_id,
+  },
 }

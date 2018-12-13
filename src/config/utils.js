@@ -1,9 +1,9 @@
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
-const { ServerError } = require('./errors')
+const { ServerError, AuthenticationError } = require('./errors')
 
 const saltRounds = parseInt(process.env.SALT_ROUNDS, 10)
-const jwt_secret = process.env.JWT_SECRET
+const jwtSecret = process.env.JWT_SECRET
 
 exports.prettyPrint = object => {
   console.log(JSON.stringify(object, null, 2))
@@ -30,9 +30,24 @@ exports.compareHash = async (password, hash) => {
 
 exports.createJWTToken = fields => {
   return new Promise((resolve, reject) => {
-    jwt.sign(fields, jwt_secret, { expiresIn: '1h' }, (err, token) => {
-      if (err) throw new ServerError()
-      resolve(token)
+    jwt.sign(
+      { ...fields, time: Date.now() },
+      jwtSecret,
+      { expiresIn: '1h' },
+      (err, token) => {
+        if (err) throw new ServerError()
+        resolve(token)
+      }
+    )
+  })
+}
+
+exports.verifyToken = token => {
+  return new Promise((resolve, reject) => {
+    if (!token) throw new AuthenticationError()
+    jwt.verify(token, jwtSecret, {}, (err, decoded) => {
+      if (err || !decoded) throw new AuthenticationError()
+      resolve(decoded.id)
     })
   })
 }

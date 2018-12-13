@@ -11,3 +11,7 @@ exports.UserExistsError = createError('User Exists Error', {
 exports.IncorrectUserError = createError('Incorrect User Error', {
   message: 'Invalid username or password',
 })
+
+exports.AuthenticationError = createError('Authentication Error', {
+  message: `Couldn't Authenticate you`,
+})
