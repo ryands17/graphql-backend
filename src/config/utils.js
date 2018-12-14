@@ -44,10 +44,9 @@ exports.createJWTToken = fields => {
 
 exports.verifyToken = token => {
   return new Promise((resolve, reject) => {
-    if (!token) throw new AuthenticationError()
     jwt.verify(token, jwtSecret, {}, (err, decoded) => {
       if (err || !decoded) throw new AuthenticationError()
-      resolve(decoded.id)
+      resolve(decoded)
     })
   })
 }

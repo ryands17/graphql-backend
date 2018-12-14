@@ -3,20 +3,24 @@ const { verifyToken } = require('../config/utils')
 module.exports = {
   Query: {
     feed: async (_, __, ctx) => {
-      const rows = await ctx.db.select().from('links')
+      let { id: userId } = await verifyToken(ctx.token)
+      const rows = await ctx.db
+        .select()
+        .from('links')
+        .where({ user_id: userId })
       return rows
     },
-    link: async (_, { id }, ctx) => {
+    /* link: async (_, { id }, ctx) => {
       let link = await ctx
         .db('links')
         .where({ id })
         .first()
       return link || null
-    },
+    }, */
   },
   Mutation: {
     post: async (_, args, ctx) => {
-      let userId = await verifyToken(ctx.token)
+      let { id: userId } = await verifyToken(ctx.token)
       let link = {
         ...args,
         user_id: userId,
@@ -26,7 +30,7 @@ module.exports = {
       return link
     },
     updateLink: async (_, { id, ...rest }, ctx) => {
-      let userId = await verifyToken(ctx.token)
+      let { id: userId } = await verifyToken(ctx.token)
       let i = await ctx
         .db('links')
         .where({ id, user_id: userId })
@@ -39,7 +43,7 @@ module.exports = {
       return updatedLink
     },
     deleteLink: async (_, { id }, ctx) => {
-      let userId = await verifyToken(ctx.token)
+      let { id: userId } = await verifyToken(ctx.token)
       let deletedLink = await ctx
         .db('links')
         .where({ id, user_id: userId })

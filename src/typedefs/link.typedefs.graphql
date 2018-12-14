@@ -7,8 +7,7 @@ type Link {
 
 type Query {
   feed: [Link!]!
-
-  link(id: ID!): Link
+  # link(id: ID!): Link
 }
 
 type Mutation {

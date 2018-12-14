@@ -15,9 +15,9 @@ const resolvers = mergeResolvers(fileLoader(path.join(__dirname, 'resolvers')))
 const server = new GraphQLServer({
   typeDefs,
   resolvers,
-  context: payload => ({
+  context: ({ request }) => ({
     db,
-    token: payload.request.get('token'),
+    token: request.get('token'),
   }),
 })
 
