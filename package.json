@@ -4,8 +4,9 @@
   "description": "A sample GraphQL API using graphql-yoga",
   "main": "src/index.js",
   "scripts": {
+    "lint": "eslint --ignore-path .gitignore .",
     "dev": "nodemon --watch src ./src/index.js",
-    "start": "node ./src/index.js"
+    "start": "npm run lint && node ./src/index.js"
   },
   "keywords": [
     "graphql",

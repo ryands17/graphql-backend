@@ -1,0 +1,31 @@
+enum AnimalType {
+  dog
+  cat
+}
+
+interface Animal {
+  type: AnimalType!
+}
+
+# only non-scalar types(custom types) can be added to unions (not even interfaces)
+union SearchResult = Person | Dog | Cat
+
+type Person {
+  name: String!
+  age: Int!
+}
+
+type Dog implements Animal {
+  type: AnimalType!
+  personality: String!
+}
+
+type Cat implements Animal {
+  type: AnimalType!
+  lives: Int!
+}
+
+type Query {
+  animal: Animal!
+  search: [SearchResult]!
+}

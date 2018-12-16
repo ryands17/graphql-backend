@@ -7,8 +7,13 @@ type LoginSuccess {
   token: String!
 }
 
+input UserAuthInput {
+  email: String!
+  password: String!
+}
+
 type Mutation {
   signup(name: String!, email: String!, password: String!): Boolean!
 
-  login(email: String!, password: String!): LoginSuccess!
+  login(credentials: UserAuthInput!): LoginSuccess!
 }

@@ -26,7 +26,7 @@ module.exports = {
       }
       return true
     },
-    login: async (_, { email, password }, ctx) => {
+    login: async (_, { credentials: { email, password } }, ctx) => {
       let user = await ctx
         .db('users')
         .where({ email })
